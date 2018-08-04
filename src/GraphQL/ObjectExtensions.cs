@@ -62,11 +62,6 @@ namespace GraphQL
                 return propertyValue;
             }
 
-            if (propertyValue == null)
-            {
-                return null;
-            }
-
             var enumerableInterface = fieldType.Name == "IEnumerable`1"
               ? fieldType
               : fieldType.GetInterface("IEnumerable`1");
@@ -89,8 +84,7 @@ namespace GraphQL
                     newArray = (IList)Activator.CreateInstance(genericListType);
                 }
 
-                var valueList = propertyValue as IEnumerable;
-                if (valueList == null) return newArray;
+                if (!(propertyValue is IEnumerable valueList)) return newArray;
 
                 foreach (var listItem in valueList)
                 {
