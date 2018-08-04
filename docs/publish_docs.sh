@@ -5,7 +5,7 @@ echo Generating documentation for Version $1
 target=doc-target
 
 rm -rf $target
-git clone git@github.com:graphql-dotnet/graphql-dotnet.github.io.git $target
+git clone git@github.com/pteargryphon:graphql-dotnet/graphql-dotnet.github.io.git $target
 
 dotnet stdocs export $target Website --version $1 --directory ./src
 

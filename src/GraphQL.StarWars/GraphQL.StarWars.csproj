@@ -5,8 +5,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>GraphQL.StarWars</AssemblyName>
     <PackageId>GraphQL.StarWars</PackageId>
-    <PackageProjectUrl>https://github.com/graphql-dotnet/graphql-dotnet</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/graphql-dotnet/graphql-dotnet/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/pteargryphon/graphql-dotnet/graphql-dotnet</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/pteargryphon/graphql-dotnet/graphql-dotnet/blob/master/LICENSE.md</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
