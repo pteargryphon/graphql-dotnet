@@ -31,7 +31,6 @@ namespace GraphQL
         public string Name { get; set; }
         public string Description { get; set; }
         public string DeprecationReason { get; set; }
-        public ResolverType Type { get; set; }
 
         public Type IsTypeOf { get; set; }
 
@@ -49,11 +48,5 @@ namespace GraphQL
             field.Description = Description;
             field.DeprecationReason = DeprecationReason;
         }
-    }
-
-    public enum ResolverType
-    {
-        Resolver,
-        Subscriber
     }
 }

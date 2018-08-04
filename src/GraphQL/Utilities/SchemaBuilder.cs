@@ -188,17 +188,7 @@ namespace GraphQL.Utilities
 
             CopyMetadata(type, typeConfig);
 
-            Func<string, GraphQLFieldDefinition, FieldType> constructFieldType;
-            if (type.Name == "Subscription")
-            {
-                constructFieldType = ToSubscriptionFieldType;
-            }
-            else
-            {
-                constructFieldType = ToFieldType;
-            }
-
-            var fields = astType.Fields.Select(f => constructFieldType(type.Name, f));
+            var fields = astType.Fields.Select(f => ToFieldType(type.Name, f));
             fields.Apply(f =>
             {
                 type.AddField(f);
@@ -223,32 +213,6 @@ namespace GraphQL.Utilities
             field.Description = fieldConfig.Description;
             field.ResolvedType = ToGraphType(fieldDef.Type);
             field.Resolver = fieldConfig.Resolver;
-
-            CopyMetadata(field, fieldConfig);
-
-            var args = fieldDef.Arguments.Select(ToArguments);
-            field.Arguments = new QueryArguments(args);
-
-            ApplyDeprecatedDirective(fieldDef.Directives, reason =>
-            {
-                field.DeprecationReason = fieldConfig.DeprecationReason ?? reason;
-            });
-
-            return field;
-        }
-
-        protected virtual FieldType ToSubscriptionFieldType(string parentTypeName, GraphQLFieldDefinition fieldDef)
-        {
-            var typeConfig = Types.For(parentTypeName);
-            var fieldConfig = typeConfig.SubscriptionFieldFor(fieldDef.Name.Value, DependencyResolver);
-
-            var field = new EventStreamFieldType();
-            field.Name = fieldDef.Name.Value;
-            field.Description = fieldConfig.Description;
-            field.ResolvedType = ToGraphType(fieldDef.Type);
-            field.Resolver = fieldConfig.Resolver;
-            field.Subscriber = fieldConfig.Subscriber;
-            field.AsyncSubscriber = fieldConfig.AsyncSubscriber;
 
             CopyMetadata(field, fieldConfig);
 

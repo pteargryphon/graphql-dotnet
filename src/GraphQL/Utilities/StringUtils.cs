@@ -12,6 +12,8 @@ namespace GraphQL.Utilities
         /// <summary>
         /// Split a cased string into a series of "words" excluding the separator if applicable.
         /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public static IEnumerable<string> ToWords(string str)
         {
             foreach (Match match in reWords.Matches(str))

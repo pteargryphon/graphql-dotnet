@@ -14,9 +14,6 @@ namespace GraphQL.Utilities
         public string Description { get; set; }
         public string DeprecationReason { get; set; }
         public IFieldResolver Resolver { get; set; }
-        public IEventStreamResolver Subscriber { get; set; }
-        public IAsyncEventStreamResolver AsyncSubscriber { get; set; }
-        public IAccessor ResolverAccessor { get; set; }
-        public IAccessor SubscriberAccessor { get; set; }
+        public IAccessor Accessor { get; set; }
     }
 }

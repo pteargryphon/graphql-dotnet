@@ -23,7 +23,7 @@ namespace GraphQL.Validation
             params INode[] nodes)
             : base(message, innerException)
         {
-            Code = errorCode;
+            ErrorCode = errorCode;
 
             nodes?.Apply(n =>
             {
@@ -35,6 +35,8 @@ namespace GraphQL.Validation
                 }
             });
         }
+
+        public string ErrorCode { get; }
 
         public IEnumerable<INode> Nodes => _nodes;
     }

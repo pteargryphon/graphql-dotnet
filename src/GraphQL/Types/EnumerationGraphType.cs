@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using GraphQL.Language.AST;
+using System.Reflection;
 using GraphQL.Utilities;
 
 namespace GraphQL.Types
@@ -28,7 +28,6 @@ namespace GraphQL.Types
 
         public void AddValue(EnumValueDefinition value)
         {
-            NameValidator.ValidateName(value.Name, "enum");
             Values.Add(value);
         }
 
@@ -61,7 +60,8 @@ namespace GraphQL.Types
 
         public override object ParseLiteral(IValue value)
         {
-            return !(value is EnumValue enumValue) ? null : ParseValue(enumValue.Name);
+            var enumValue = value as EnumValue;
+            return enumValue == null ? null : ParseValue(enumValue.Name);
         }
     }
 

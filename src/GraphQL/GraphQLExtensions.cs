@@ -290,9 +290,10 @@ namespace GraphQL
                 return true;
             }
 
+            var a = typeA as IAbstractGraphType;
             var b = typeB as IAbstractGraphType;
 
-            if (typeA is IAbstractGraphType a)
+            if (a != null)
             {
                 if (b != null)
                 {

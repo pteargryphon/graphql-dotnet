@@ -76,43 +76,28 @@ namespace GraphQL
                     serializer.Serialize(writer, error.Path);
                 }
 
-                WriteErrorExtensions(error, writer, serializer);
+                if (!string.IsNullOrWhiteSpace(error.Code))
+                {
+                    writer.WritePropertyName("code");
+                    serializer.Serialize(writer, error.Code);
+                }
+
+                if (error.Data.Count > 0)
+                {
+                    writer.WritePropertyName("data");
+                    writer.WriteStartObject();
+                    error.DataAsDictionary.Apply(entry =>
+                    {
+                        writer.WritePropertyName(entry.Key);
+                        serializer.Serialize(writer, entry.Value);
+                    });
+                    writer.WriteEndObject();
+                }
 
                 writer.WriteEndObject();
             });
 
             writer.WriteEndArray();
-        }
-
-        private void WriteErrorExtensions(ExecutionError error, JsonWriter writer, JsonSerializer serializer)
-        {
-            if(string.IsNullOrWhiteSpace(error.Code) && error.Data?.Count == 0)
-            {
-                return;
-            }
-
-            writer.WritePropertyName("extensions");
-            writer.WriteStartObject();
-
-            if (!string.IsNullOrWhiteSpace(error.Code))
-            {
-                writer.WritePropertyName("code");
-                serializer.Serialize(writer, error.Code);
-            }
-
-            if (error.Data.Count > 0)
-            {
-                writer.WritePropertyName("data");
-                writer.WriteStartObject();
-                error.DataAsDictionary.Apply(entry =>
-                {
-                    writer.WritePropertyName(entry.Key);
-                    serializer.Serialize(writer, entry.Value);
-                });
-                writer.WriteEndObject();
-            }
-
-            writer.WriteEndObject();
         }
 
         private void WriteExtensions(ExecutionResult result, JsonWriter writer, JsonSerializer serializer)

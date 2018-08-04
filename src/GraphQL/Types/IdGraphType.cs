@@ -26,17 +26,20 @@ namespace GraphQL.Types
 
         public override object ParseLiteral(IValue value)
         {
-            if (value is StringValue str)
+            var str = value as StringValue;
+            if (str != null)
             {
                 return ParseValue(str.Value);
             }
 
-            if (value is IntValue num)
+            var num = value as IntValue;
+            if (num != null)
             {
                 return num.Value;
             }
 
-            if (value is LongValue longVal)
+            var longVal = value as LongValue;
+            if (longVal != null)
             {
                 return longVal.Value;
             }

@@ -151,7 +151,8 @@ namespace GraphQL
         /// <remarks>If the value is a recognized type, it is returned unaltered.</remarks>
         public static object GetValue(this object value)
         {
-            if (value is JObject objectValue)
+            var objectValue = value as JObject;
+            if (objectValue != null)
             {
                 var output = new Dictionary<string, object>();
                 foreach (var kvp in objectValue)
@@ -161,7 +162,8 @@ namespace GraphQL
                 return output;
             }
 
-            if (value is JProperty propertyValue)
+            var propertyValue = value as JProperty;
+            if (propertyValue != null)
             {
                 return new Dictionary<string, object>
                 {
@@ -169,7 +171,8 @@ namespace GraphQL
                 };
             }
 
-            if (value is JArray arrayValue)
+            var arrayValue = value as JArray;
+            if (arrayValue != null)
             {
                 return arrayValue.Children().Aggregate(new List<object>(), (list, token) =>
                 {
@@ -178,7 +181,8 @@ namespace GraphQL
                 });
             }
 
-            if (value is JValue rawValue)
+            var rawValue = value as JValue;
+            if (rawValue != null)
             {
                 var val = rawValue.Value;
                 if (val is long)

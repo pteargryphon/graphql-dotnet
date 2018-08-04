@@ -216,7 +216,8 @@ namespace GraphQL.Types
                 {
                     AddTypeIfNotRegistered(objectInterface, context);
 
-                    if (this[objectInterface] is IInterfaceGraphType interfaceInstance)
+                    var interfaceInstance = this[objectInterface] as IInterfaceGraphType;
+                    if (interfaceInstance != null)
                     {
                         obj.AddResolvedInterface(interfaceInstance);
                         interfaceInstance.AddPossibleType(obj);
@@ -292,8 +293,6 @@ namespace GraphQL.Types
 
             field.Arguments?.Apply(arg =>
             {
-                arg.Name = FieldNameConverter.NameFor(arg.Name, null);
-
                 if (arg.ResolvedType != null)
                 {
                     AddTypeIfNotRegistered(arg.ResolvedType, context);

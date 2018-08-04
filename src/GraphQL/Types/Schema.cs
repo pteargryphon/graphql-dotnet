@@ -73,7 +73,8 @@ namespace GraphQL.Types
         public Schema(IDependencyResolver dependencyResolver)
         {
             DependencyResolver = dependencyResolver;
-            ResolveType = type => dependencyResolver.Resolve(type) as IGraphType;
+            // we are not using this property and don't need to be bothered by the Obsolete message
+            // ResolveType = type => dependencyResolver.Resolve(type) as IGraphType;
 
             _lookup = new Lazy<GraphTypesLookup>(CreateTypesLookup);
             _additionalTypes = new List<Type>();
@@ -115,10 +116,11 @@ namespace GraphQL.Types
 
         public IObjectGraphType Subscription { get; set; }
 
-        [Obsolete(
-            "The ResolveType property has been deprecated in favor of using the DependencyResolver property.  " +
-            "This property will be removed in a future version.")]
-        public Func<Type, IGraphType> ResolveType { get; set; }
+        // we are not using this property and don't need to be bothered by the Obsolete message
+        // [Obsolete(
+        //     "The ResolveType property has been deprecated in favor of using the DependencyResolver property.  " +
+        //     "This property will be removed in a future version.")]
+        // public Func<Type, IGraphType> ResolveType { get; set; }
 
         public IDependencyResolver DependencyResolver { get; set; }
 
@@ -207,7 +209,8 @@ namespace GraphQL.Types
 
         public void Dispose()
         {
-            ResolveType = null;
+            // we are not using this property and don't need to be bothered by the Obsolete message
+            // ResolveType = null;
             DependencyResolver = null;
             Query = null;
             Mutation = null;

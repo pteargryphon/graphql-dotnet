@@ -18,5 +18,11 @@
             }
             return base.Equals(obj);
         }
+
+        // added to squash warning, still uses base method
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }
