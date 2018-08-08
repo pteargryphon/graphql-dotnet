@@ -7,6 +7,7 @@ namespace GraphQL.Tests.Bugs
 {
     public class NullableInputListTests : QueryTestBase<TestSchema>
     {
+        #pragma warning disable 1998
         [Fact]
         public async void Can_Accept_Null_List_From_Literal()
         {
@@ -38,6 +39,7 @@ namespace GraphQL.Tests.Bugs
             }));
         }
     }
+    #pragma warning restore 1998
 
     public class TestSchema : Schema
     {

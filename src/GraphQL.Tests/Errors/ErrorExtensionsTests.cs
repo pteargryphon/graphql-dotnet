@@ -55,6 +55,7 @@ namespace GraphQL.Tests.Errors
 
         public class TestQuery : ObjectGraphType
         {
+            #pragma warning disable 1998
             public TestQuery()
             {
                 Name = "Query";
@@ -83,6 +84,7 @@ namespace GraphQL.Tests.Errors
                     resolve: async _ => throw new Exception("Exception from asynchronous resolver")
                 );
             }
+            #pragma warning restore 1998
         }
 
         public class TestSchema : Schema

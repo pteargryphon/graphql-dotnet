@@ -97,6 +97,7 @@ namespace GraphQL.Tests.Errors
 
         public class TestQuery : ObjectGraphType
         {
+            #pragma warning disable 1998
             public TestQuery()
             {
                 Name = "Query";
@@ -117,6 +118,7 @@ namespace GraphQL.Tests.Errors
                     .Name("testSubList")
                     .Resolve(_ => new[] {new Thing {One = "One", Two = "Two"}});
             }
+            #pragma warning restore 1998
         }
 
         public class Thing
