@@ -26,18 +26,18 @@ namespace GraphQL.Dynamic.Tests
             // A moniker uniquely identifies a remote resource
             var moniker = DynamicSampleRemoteSchema.GithubMoniker;
 
-            var remotes = new[]
+            var remotes = new []
             {
                 new RemoteDescriptor
                 {
-                    Moniker = moniker,
-                    Url = "foobar"
+                Moniker = moniker,
+                Url = "foobar"
                 }
             };
 
             // Generate the new types for the remote
             // We're passing an override for remoteSchemaFetcher so we don't actually call the remote introspection endpoint
-            var types = await RemoteLiteralGraphType.LoadRemotes(remotes, remoteSchemaFetcher: url => _schema);
+            var types = await RemoteLiteralGraphType.LoadRemotes(remotes, remoteSchemaFetcher : url => _schema);
 
             var executor = new DocumentExecuter();
             var query = @"
@@ -58,7 +58,7 @@ namespace GraphQL.Dynamic.Tests
             var result = await executor.ExecuteAsync(new ExecutionOptions
             {
                 Schema = new DynamicSampleRemoteSchema(types),
-                Query = query
+                    Query = query
             });
 
             var queryResult = JObject.FromObject(result.Data);

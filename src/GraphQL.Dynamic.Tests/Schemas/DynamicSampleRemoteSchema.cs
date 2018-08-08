@@ -18,7 +18,7 @@ namespace GraphQL.Dynamic.Tests.Schemas
         {
             public SampleRemoteSchemaRoot(IEnumerable<Type> remoteTypes)
             {
-                this.RemoteField(remoteTypes, GithubMoniker, "GithubAPI", "githubDynamic", resolve: ctx =>
+                this.RemoteField(remoteTypes, GithubMoniker, "GithubAPI", "githubDynamic", resolve : ctx =>
                 {
                     // This is where we'd hypothetically return a JObject result from the remote server
 
@@ -27,21 +27,21 @@ namespace GraphQL.Dynamic.Tests.Schemas
                         user = new
                         {
                             login = "foo@bar.com",
-                            id = 12,
-                            company = "some company",
-                            repos = new[]
-                            {
-                                new
+                                id = 12,
+                                company = "some company",
+                                repos = new []
                                 {
-                                    id = 22,
-                                    name = "qux"
-                                },
-                                new
-                                {
-                                    id = 52,
-                                    name = "baz"
+                                    new
+                                    {
+                                        id = 22,
+                                            name = "qux"
+                                    },
+                                    new
+                                    {
+                                        id = 52,
+                                            name = "baz"
+                                    }
                                 }
-                            }
                         }
                     });
                 });

@@ -60,13 +60,13 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
         }
 
         internal static FieldType CreateFieldType<TResolvedType>(LiteralGraphTypeMemberInfo member)
-            where TResolvedType : IGraphType, new()
+        where TResolvedType : IGraphType, new()
         {
             return new FieldType
             {
                 Name = member.Name,
-                Type = typeof(TResolvedType),
-                Resolver = CreateFieldResolverFor(member)
+                    Type = typeof(TResolvedType),
+                    Resolver = CreateFieldResolverFor(member)
             };
         }
 
@@ -98,9 +98,9 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                 return memberInfoType;
             }
 
-            return type.IsPrimitive
-                ? LiteralGraphTypeMemberInfoType.Unknown
-                : LiteralGraphTypeMemberInfoType.Complex;
+            return type.IsPrimitive ?
+                LiteralGraphTypeMemberInfoType.Unknown :
+                LiteralGraphTypeMemberInfoType.Complex;
         }
 
         internal static Type GetTypeForLiteralGraphTypeMemberInfoType(LiteralGraphTypeMemberInfoType memberInfoType)

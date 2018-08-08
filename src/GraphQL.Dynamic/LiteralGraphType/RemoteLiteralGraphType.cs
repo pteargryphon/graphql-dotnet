@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -8,13 +10,11 @@ using System.Threading.Tasks;
 using GraphQL.Dynamic.Types.Introspection;
 using GraphQL.Introspection;
 using GraphQL.Types;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using System.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
-using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GraphQL.Dynamic.Types.LiteralGraphType
 {
@@ -86,8 +86,8 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                 remoteSchemaFetcher = FetchRemoteSchemaViaHttp;
             }
 
-            var parentConstructor = typeof(RemoteLiteralGraphType).GetConstructor(new[] { typeof(string), typeof(string) });
-            var metadataAttributeConstructor = typeof(RemoteLiteralGraphTypeMetadataAttribute).GetConstructor(new[] { typeof(string), typeof(string), typeof(string) });
+            var parentConstructor = typeof(RemoteLiteralGraphType).GetConstructor(new [] { typeof(string), typeof(string) });
+            var metadataAttributeConstructor = typeof(RemoteLiteralGraphTypeMetadataAttribute).GetConstructor(new [] { typeof(string), typeof(string), typeof(string) });
 
             // Convert each remote into a new assembly asynchronously
             var tasks = remotes
@@ -96,14 +96,14 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                     return Task.Run(() =>
                     {
                         var url = remote.Url;
-                        var schema = FetchRemoteServerSchema(url, remoteSchemaFetcher);                      
-                        
+                        var schema = FetchRemoteServerSchema(url, remoteSchemaFetcher);
+
                         var types = schema.Types
                             .Where(typeFilter)
                             .Select(schemaType =>
                             {
                                 var typeName = schemaType.Name;
-                                
+
                                 // Create CompilationUnitSyntax
                                 var syntaxFactory = SyntaxFactory.CompilationUnit();
 
@@ -139,10 +139,10 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                                         )
                                     )
                                     .WithBody(SyntaxFactory.Block());
-                                
+
                                 // Add the field, the property and method to the class.
                                 classDeclaration = classDeclaration.AddMembers(ctorDeclaration);
-                                
+
                                 syntaxFactory = syntaxFactory.AddMembers(classDeclaration);
 
                                 var referenceAssemblies = CollectReferences();
@@ -151,21 +151,22 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                                 referenceAssemblies.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
 
                                 var compilation = CSharpCompilation.Create($"GraphQL.Dynamic.RemoteLiteralGraphTypes.{typeName}-{Guid.NewGuid().ToString("N")}",
-                                    options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary),
-                                    syntaxTrees: new[] { CSharpSyntaxTree.ParseText(syntaxFactory.NormalizeWhitespace().ToFullString()) },
-                                    references: referenceAssemblies
-                                    );
+                                    options : new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary),
+                                    syntaxTrees : new [] { CSharpSyntaxTree.ParseText(syntaxFactory.NormalizeWhitespace().ToFullString()) },
+                                    references : referenceAssemblies
+                                );
 
                                 EmitResult emitResult;
 
-                                using (var ms = new MemoryStream())
+                                using(var ms = new MemoryStream())
                                 {
                                     emitResult = compilation.Emit(ms);
                                     if (emitResult.Success)
                                     {
                                         var assembly = Assembly.Load(ms.GetBuffer());
                                         return assembly.GetType(typeName);
-                                    } else
+                                    }
+                                    else
                                     {
                                         foreach (var error in emitResult.Diagnostics)
                                             Debug.WriteLine(error.GetMessage());
@@ -226,7 +227,6 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
             }
         }
 
-
         private static IEnumerable<FieldType> GetFieldsForFieldType(string remote, Introspection.TypeElement parentField)
         {
             FieldTypeResolver complexFieldTypeResolver = member =>
@@ -242,15 +242,15 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                 }
 
                 var schemaType = remoteTypes.FirstOrDefault(t => t.Name == literalMember.TypeName);
-                var realType = literalMember.IsList
-                    ? typeof(ListGraphType<>).MakeGenericType(schemaType)
-                    : schemaType;
+                var realType = literalMember.IsList ?
+                    typeof(ListGraphType<>).MakeGenericType(schemaType) :
+                    schemaType;
 
                 return new FieldType
                 {
                     Name = literalMember.Name,
-                    Type = realType,
-                    Resolver = LiteralGraphTypeHelpers.CreateFieldResolverFor(literalMember)
+                        Type = realType,
+                        Resolver = LiteralGraphTypeHelpers.CreateFieldResolverFor(literalMember)
                 };
             };
 
@@ -266,14 +266,14 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                     return new RemoteLiteralGraphTypeMemberInfo
                     {
                         DeclaringTypeName = parentField.Name,
-                        Name = field.Name,
-                        Type = IntrospectionTypeToLiteralGraphTypeMemberInfoType(field.Type),
-                        TypeName = IntrospectionTypeToLiteralGraphTypeMemberInfoTypeName(field.Type),
-                        IsList = field.Type.Kind == TypeElementTypeKind.List,
-                        GetValueFn = ctx =>
-                        {
-                            return ((JToken)ctx.Source)[field.Name].Value<object>();
-                        }
+                            Name = field.Name,
+                            Type = IntrospectionTypeToLiteralGraphTypeMemberInfoType(field.Type),
+                            TypeName = IntrospectionTypeToLiteralGraphTypeMemberInfoTypeName(field.Type),
+                            IsList = field.Type.Kind == TypeElementTypeKind.List,
+                            GetValueFn = ctx =>
+                            {
+                                return ((JToken) ctx.Source) [field.Name].Value<object>();
+                            }
                     };
                 })
                 // TODO: handle unresolvable types (I'm looking at you UNION)
@@ -363,7 +363,7 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
         private static Introspection.Schema FetchRemoteServerSchema(string remote, RemoteSchemaFetcher remoteSchemaFetcher)
         {
             // lock types mutex
-            lock (FetchRemoteServerSchemaMutex)
+            lock(FetchRemoteServerSchemaMutex)
             {
                 // did someone else fetch it while we were waiting?
                 if (!RemoteServerSchemas.TryGetValue(remote, out var schema))
@@ -402,11 +402,11 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
 
         private static Introspection.Schema FetchRemoteSchemaViaHttp(string url)
         {
-            using (var client = new HttpClient())
+            using(var client = new HttpClient())
             {
                 var query = new
                 {
-                    Query = SchemaIntrospection.IntrospectionQuery
+                Query = SchemaIntrospection.IntrospectionQuery
                 };
 
                 var response = client.PostAsync(new Uri(url), new StringContent(JsonConvert.SerializeObject(query)))

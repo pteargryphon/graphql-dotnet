@@ -44,11 +44,11 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                     return new TypedLiteralGraphTypeMemberInfo
                     {
                         DeclaringTypeName = member.DeclaringType.FullName,
-                        Name = member.Name,
-                        Type = LiteralGraphTypeHelpers.GetLiteralGraphTypeMemberInfoTypeForType(type),
-                        IsList = IsListType(type),
-                        ActualType = type,
-                        GetValueFn = MakeGetValueFnForMemberInfo(member)
+                            Name = member.Name,
+                            Type = LiteralGraphTypeHelpers.GetLiteralGraphTypeMemberInfoTypeForType(type),
+                            IsList = IsListType(type),
+                            ActualType = type,
+                            GetValueFn = MakeGetValueFnForMemberInfo(member)
                     };
                 })
                 .ToList();
@@ -69,14 +69,16 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
                 // TODO: if maybeActualType is a primitive, we SHOULDN'T be wrapping it in a LiteralGraphType<>
                 var literalGraphType = typedMember.IsList
                     // IEnumerable<T> -> ListGraphType<LiteralGraphType<T>> 
-                    ? typeof(ListGraphType<>).MakeGenericType(typeof(LiteralGraphType<>).MakeGenericType(GetListElementType(maybeActualType)))
+                    ?
+                    typeof(ListGraphType<>).MakeGenericType(typeof(LiteralGraphType<>).MakeGenericType(GetListElementType(maybeActualType)))
                     // T -> LiteralGraphType<T>
-                    : typeof(LiteralGraphType<>).MakeGenericType(maybeActualType);
+                    :
+                    typeof(LiteralGraphType<>).MakeGenericType(maybeActualType);
 
                 return typeof(LiteralGraphTypeHelpers)
                     .GetMethod(nameof(LiteralGraphTypeHelpers.CreateFieldType), BindingFlags.NonPublic | BindingFlags.Static)
                     .MakeGenericMethod(literalGraphType)
-                    .Invoke(null, new[] { member }) as FieldType;
+                    .Invoke(null, new [] { member }) as FieldType;
             };
 
             return members
@@ -101,9 +103,9 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
 
         private Type GetListElementType(Type type)
         {
-            var listType = IsGenericListType(type)
-                ? type
-                : type.GetInterfaces()?.FirstOrDefault(i => IsGenericListType(i));
+            var listType = IsGenericListType(type) ?
+                type :
+                type.GetInterfaces()?.FirstOrDefault(i => IsGenericListType(i));
 
             if (listType == null)
             {
@@ -133,11 +135,11 @@ namespace GraphQL.Dynamic.Types.LiteralGraphType
 
         private static Type GetTypeForMemberInfo(MemberInfo member)
         {
-            return member is FieldInfo field
-                ? field.FieldType
-                : member is PropertyInfo property
-                    ? property.PropertyType
-                    : null;
+            return member is FieldInfo field ?
+                field.FieldType :
+                member is PropertyInfo property ?
+                property.PropertyType :
+                null;
         }
 
         internal class TypedLiteralGraphTypeMemberInfo : LiteralGraphTypeMemberInfo

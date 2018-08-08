@@ -1,5 +1,4 @@
 using System;
-
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -170,9 +169,9 @@ namespace GraphQL.Dynamic.Types.Introspection
 
     public enum TypeElementTypeKind { Enum, InputObject, Interface, List, NonNull, Object, Scalar, Union };
 
-    public partial class Root
-    {
-        public static Root FromJson(string json) => JsonConvert.DeserializeObject<Root>(json, Converter.Settings);
+ public partial class Root
+ {
+ public static Root FromJson(string json) => JsonConvert.DeserializeObject<Root>(json, Converter.Settings);
     }
 
     static class InterfaceKindExtensions
@@ -181,15 +180,24 @@ namespace GraphQL.Dynamic.Types.Introspection
         {
             switch (str)
             {
-                case "ENUM": return TypeElementTypeKind.Enum;
-                case "INPUT_OBJECT": return TypeElementTypeKind.InputObject;
-                case "INTERFACE": return TypeElementTypeKind.Interface;
-                case "LIST": return TypeElementTypeKind.List;
-                case "NON_NULL": return TypeElementTypeKind.NonNull;
-                case "OBJECT": return TypeElementTypeKind.Object;
-                case "SCALAR": return TypeElementTypeKind.Scalar;
-                case "UNION": return TypeElementTypeKind.Union;
-                default: return null;
+                case "ENUM":
+                    return TypeElementTypeKind.Enum;
+                case "INPUT_OBJECT":
+                    return TypeElementTypeKind.InputObject;
+                case "INTERFACE":
+                    return TypeElementTypeKind.Interface;
+                case "LIST":
+                    return TypeElementTypeKind.List;
+                case "NON_NULL":
+                    return TypeElementTypeKind.NonNull;
+                case "OBJECT":
+                    return TypeElementTypeKind.Object;
+                case "SCALAR":
+                    return TypeElementTypeKind.Scalar;
+                case "UNION":
+                    return TypeElementTypeKind.Union;
+                default:
+                    return null;
             }
         }
 
@@ -205,14 +213,30 @@ namespace GraphQL.Dynamic.Types.Introspection
         {
             switch (value)
             {
-                case TypeElementTypeKind.Enum: serializer.Serialize(writer, "ENUM"); break;
-                case TypeElementTypeKind.InputObject: serializer.Serialize(writer, "INPUT_OBJECT"); break;
-                case TypeElementTypeKind.Interface: serializer.Serialize(writer, "INTERFACE"); break;
-                case TypeElementTypeKind.List: serializer.Serialize(writer, "LIST"); break;
-                case TypeElementTypeKind.NonNull: serializer.Serialize(writer, "NON_NULL"); break;
-                case TypeElementTypeKind.Object: serializer.Serialize(writer, "OBJECT"); break;
-                case TypeElementTypeKind.Scalar: serializer.Serialize(writer, "SCALAR"); break;
-                case TypeElementTypeKind.Union: serializer.Serialize(writer, "UNION"); break;
+                case TypeElementTypeKind.Enum:
+                    serializer.Serialize(writer, "ENUM");
+                    break;
+                case TypeElementTypeKind.InputObject:
+                    serializer.Serialize(writer, "INPUT_OBJECT");
+                    break;
+                case TypeElementTypeKind.Interface:
+                    serializer.Serialize(writer, "INTERFACE");
+                    break;
+                case TypeElementTypeKind.List:
+                    serializer.Serialize(writer, "LIST");
+                    break;
+                case TypeElementTypeKind.NonNull:
+                    serializer.Serialize(writer, "NON_NULL");
+                    break;
+                case TypeElementTypeKind.Object:
+                    serializer.Serialize(writer, "OBJECT");
+                    break;
+                case TypeElementTypeKind.Scalar:
+                    serializer.Serialize(writer, "SCALAR");
+                    break;
+                case TypeElementTypeKind.Union:
+                    serializer.Serialize(writer, "UNION");
+                    break;
             }
         }
     }
@@ -243,22 +267,22 @@ namespace GraphQL.Dynamic.Types.Introspection
             var t = value.GetType();
             if (t == typeof(TypeElementTypeKind))
             {
-                ((TypeElementTypeKind)value).WriteJson(writer, serializer);
+                ((TypeElementTypeKind) value).WriteJson(writer, serializer);
                 return;
             }
             if (t == typeof(TypeElementTypeKind))
             {
-                ((TypeElementTypeKind)value).WriteJson(writer, serializer);
+                ((TypeElementTypeKind) value).WriteJson(writer, serializer);
                 return;
             }
             if (t == typeof(TypeElementTypeKind))
             {
-                ((TypeElementTypeKind)value).WriteJson(writer, serializer);
+                ((TypeElementTypeKind) value).WriteJson(writer, serializer);
                 return;
             }
             if (t == typeof(TypeElementTypeKind))
             {
-                ((TypeElementTypeKind)value).WriteJson(writer, serializer);
+                ((TypeElementTypeKind) value).WriteJson(writer, serializer);
                 return;
             }
             throw new Exception("Unknown type");
@@ -269,11 +293,11 @@ namespace GraphQL.Dynamic.Types.Introspection
             MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
             DateParseHandling = DateParseHandling.None,
             Converters = {
-                new Converter(),
-                new IsoDateTimeConverter()
-                {
-                    DateTimeStyles = DateTimeStyles.AssumeUniversal,
-                },
+            new Converter(),
+            new IsoDateTimeConverter()
+            {
+            DateTimeStyles = DateTimeStyles.AssumeUniversal,
+            },
             },
         };
     }
