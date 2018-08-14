@@ -42,7 +42,6 @@ namespace GraphQL.Execution
                 rootType,
                 context.Operation.SelectionSet);
 
-
             SetSubFieldNodes(context, root, fields);
 
             return root;
@@ -50,15 +49,13 @@ namespace GraphQL.Execution
 
         public static void SetSubFieldNodes(ExecutionContext context, ObjectExecutionNode parent)
         {
-
-            var fields = CollectFields(context, parent.GetObjectGraphType(), parent.Field?.SelectionSet);
-
+            var fields = CollectFields(context, parent.GetObjectGraphType(context.Schema), parent.Field?.SelectionSet);
             SetSubFieldNodes(context, parent, fields);
         }
 
         public static void SetSubFieldNodes(ExecutionContext context, ObjectExecutionNode parent, Dictionary<string, Field> fields)
         {
-            var parentType = parent.GetObjectGraphType();
+            var parentType = parent.GetObjectGraphType(context.Schema);
 
             var subFields = new Dictionary<string, ExecutionNode>();
 
@@ -88,12 +85,11 @@ namespace GraphQL.Execution
 
         public static void SetArrayItemNodes(ExecutionContext context, ArrayExecutionNode parent)
         {
-            var listType = (ListGraphType)parent.GraphType;
+            var listType = (ListGraphType) parent.GraphType;
             var itemType = listType.ResolvedType;
 
             if (itemType is NonNullGraphType nonNullGraphType)
                 itemType = nonNullGraphType.ResolvedType;
-
 
             if (!(parent.Result is IEnumerable data))
             {
@@ -172,7 +168,7 @@ namespace GraphQL.Execution
                     FieldAst = node.Field,
                     FieldDefinition = node.FieldDefinition,
                     ReturnType = node.FieldDefinition.ResolvedType,
-                    ParentType = node.GetParentType(),
+                    ParentType = node.GetParentType(context.Schema),
                     Arguments = arguments,
                     Source = node.Source,
                     Schema = context.Schema,
@@ -222,6 +218,9 @@ namespace GraphQL.Execution
             }
             catch (Exception ex)
             {
+                if (context.ThrowOnUnhandledException)
+                    throw;
+
                 var error = new ExecutionError($"Error trying to resolve {node.Name}.", ex);
                 error.AddLocation(node.Field, context.Document);
                 error.Path = node.Path;
@@ -260,14 +259,14 @@ namespace GraphQL.Execution
 
             if (fieldType is IAbstractGraphType abstractType)
             {
-                objectType = abstractType.GetObjectType(result);
+                objectType = abstractType.GetObjectType(result, context.Schema);
 
                 if (objectType == null)
                 {
                     var error = new ExecutionError(
                         $"Abstract type {abstractType.Name} must resolve to an Object type at " +
                         $"runtime for field {node.Parent.GraphType.Name}.{node.Name} " +
-                        $"with value {result}, received 'null'.");
+                        $"with value '{result}', received 'null'.");
                     throw error;
                 }
 
@@ -280,7 +279,7 @@ namespace GraphQL.Execution
 
             if (objectType?.IsTypeOf != null && !objectType.IsTypeOf(result))
             {
-                var error = new ExecutionError($"Expected value of type \"{objectType}\" but got: {result}.");
+                var error = new ExecutionError($"Expected value of type \"{objectType}\" for \"{objectType.Name}\" but got: {result}.");
                 throw error;
             }
         }

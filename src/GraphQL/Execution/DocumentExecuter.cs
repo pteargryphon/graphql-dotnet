@@ -37,10 +37,8 @@ namespace GraphQL
         private readonly IDocumentValidator _documentValidator;
         private readonly IComplexityAnalyzer _complexityAnalyzer;
 
-        public DocumentExecuter()
-            : this(new GraphQLDocumentBuilder(), new DocumentValidator(), new ComplexityAnalyzer())
-        {
-        }
+        public DocumentExecuter() : this(new GraphQLDocumentBuilder(), new DocumentValidator(), new ComplexityAnalyzer())
+        { }
 
         public DocumentExecuter(IDocumentBuilder documentBuilder, IDocumentValidator documentValidator, IComplexityAnalyzer complexityAnalyzer)
         {
@@ -63,13 +61,13 @@ namespace GraphQL
             return ExecuteAsync(new ExecutionOptions
             {
                 Schema = schema,
-                Root = root,
-                Query = query,
-                OperationName = operationName,
-                Inputs = inputs,
-                UserContext = userContext,
-                CancellationToken = cancellationToken,
-                ValidationRules = rules
+                    Root = root,
+                    Query = query,
+                    OperationName = operationName,
+                    Inputs = inputs,
+                    UserContext = userContext,
+                    CancellationToken = cancellationToken,
+                    ValidationRules = rules
             });
         }
 
@@ -114,7 +112,7 @@ namespace GraphQL
 
                 if (!options.Schema.Initialized)
                 {
-                    using (metrics.Subject("schema", "Initializing schema"))
+                    using(metrics.Subject("schema", "Initializing schema"))
                     {
                         if (options.SetFieldMiddleware)
                         {
@@ -125,7 +123,7 @@ namespace GraphQL
                 }
 
                 var document = options.Document;
-                using (metrics.Subject("document", "Building document"))
+                using(metrics.Subject("document", "Building document"))
                 {
                     if (document == null)
                     {
@@ -142,7 +140,7 @@ namespace GraphQL
                 }
 
                 IValidationResult validationResult;
-                using (metrics.Subject("document", "Validating document"))
+                using(metrics.Subject("document", "Validating document"))
                 {
                     validationResult = _documentValidator.Validate(
                         options.Query,
@@ -155,8 +153,8 @@ namespace GraphQL
 
                 if (options.ComplexityConfiguration != null && validationResult.IsValid)
                 {
-                    using (metrics.Subject("document", "Analyzing complexity"))
-                        _complexityAnalyzer.Validate(document, options.ComplexityConfiguration);
+                    using(metrics.Subject("document", "Analyzing complexity"))
+                    _complexityAnalyzer.Validate(document, options.ComplexityConfiguration);
                 }
 
                 foreach (var listener in options.Listeners)
@@ -185,7 +183,8 @@ namespace GraphQL
                     options.UserContext,
                     options.CancellationToken,
                     metrics,
-                    options.Listeners);
+                    options.Listeners,
+                    options.ThrowOnUnhandledException);
 
                 if (context.Errors.Any())
                 {
@@ -195,7 +194,7 @@ namespace GraphQL
                     };
                 }
 
-                using (metrics.Subject("execution", "Executing operation"))
+                using(metrics.Subject("execution", "Executing operation"))
                 {
                     foreach (var listener in context.Listeners)
                     {
@@ -233,11 +232,14 @@ namespace GraphQL
             }
             catch (Exception ex)
             {
+                if (options.ThrowOnUnhandledException)
+                    throw;
+
                 result = new ExecutionResult
                 {
                     Errors = new ExecutionErrors
                     {
-                        new ExecutionError(ex.Message, ex)
+                    new ExecutionError(ex.Message, ex)
                     }
                 };
             }
@@ -251,7 +253,7 @@ namespace GraphQL
             return result;
         }
 
-        public ExecutionContext BuildExecutionContext(
+        private ExecutionContext BuildExecutionContext(
             ISchema schema,
             object root,
             Document document,
@@ -260,7 +262,8 @@ namespace GraphQL
             object userContext,
             CancellationToken cancellationToken,
             Metrics metrics,
-            IEnumerable<IDocumentExecutionListener> listeners)
+            IEnumerable<IDocumentExecutionListener> listeners,
+            bool throwOnUnhandledException)
         {
             var context = new ExecutionContext();
             context.Document = document;
@@ -275,15 +278,16 @@ namespace GraphQL
 
             context.Metrics = metrics;
             context.Listeners = listeners;
+            context.ThrowOnUnhandledException = throwOnUnhandledException;
 
             return context;
         }
 
         protected virtual Operation GetOperation(string operationName, Document document)
         {
-            return !string.IsNullOrWhiteSpace(operationName)
-                ? document.Operations.WithName(operationName)
-                : document.Operations.FirstOrDefault();
+            return !string.IsNullOrWhiteSpace(operationName) ?
+                document.Operations.WithName(operationName) :
+                document.Operations.FirstOrDefault();
         }
 
         protected virtual IExecutionStrategy SelectExecutionStrategy(ExecutionContext context)

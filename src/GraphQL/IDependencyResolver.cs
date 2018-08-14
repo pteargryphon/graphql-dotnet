@@ -33,17 +33,24 @@ namespace GraphQL
         /// <returns>T.</returns>
         public T Resolve<T>()
         {
-            return (T)Resolve(typeof(T));
+            return (T) Resolve(typeof(T));
         }
 
         /// <summary>
         /// Resolves the specified type.
         /// </summary>
         /// <param name="type">Desired type</param>
-        /// <returns>System.Object.</returns>
+        /// <returns>An instance of <paramref name="type"/>.</returns>
         public object Resolve(Type type)
         {
-            return Activator.CreateInstance(type);
+            try
+            {
+                return Activator.CreateInstance(type);
+            }
+            catch (Exception exception)
+            {
+                throw new Exception($"Failed to call Activator.CreateInstance. Type: {type.FullName}", exception);
+            }
         }
     }
 
@@ -71,7 +78,7 @@ namespace GraphQL
         /// <typeparam name="T">Desired type</typeparam>
         public T Resolve<T>()
         {
-            return (T)Resolve(typeof(T));
+            return (T) Resolve(typeof(T));
         }
 
         /// <summary>

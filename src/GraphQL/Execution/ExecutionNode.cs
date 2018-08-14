@@ -46,7 +46,7 @@ namespace GraphQL.Execution
 
         public abstract object ToValue();
 
-        public IObjectGraphType GetParentType()
+        public IObjectGraphType GetParentType(ISchema schema)
         {
             IGraphType parentType = Parent?.GraphType;
 
@@ -54,7 +54,7 @@ namespace GraphQL.Execution
                 return objectType;
 
             if (parentType is IAbstractGraphType abstractType && Parent.IsResultSet)
-                return abstractType.GetObjectType(Parent.Result);
+                return abstractType.GetObjectType(Parent.Result, schema);
 
             return null;
         }
@@ -69,18 +69,15 @@ namespace GraphQL.Execution
     {
         public IDictionary<string, ExecutionNode> SubFields { get; set; }
 
-        public ObjectExecutionNode(ExecutionNode parent, IGraphType graphType, Field field, FieldType fieldDefinition, string[] path)
-            : base(parent, graphType, field, fieldDefinition, path)
-        {
+        public ObjectExecutionNode(ExecutionNode parent, IGraphType graphType, Field field, FieldType fieldDefinition, string[] path) : base(parent, graphType, field, fieldDefinition, path)
+        { }
 
-        }
-
-        public IObjectGraphType GetObjectGraphType()
+        public IObjectGraphType GetObjectGraphType(ISchema schema)
         {
             var objectGraphType = GraphType as IObjectGraphType;
 
             if (GraphType is IAbstractGraphType abstractGraphType && IsResultSet)
-                objectGraphType = abstractGraphType.GetObjectType(Result);
+                objectGraphType = abstractGraphType.GetObjectType(Result, schema);
 
             return objectGraphType;
         }
@@ -108,8 +105,7 @@ namespace GraphQL.Execution
 
     public class RootExecutionNode : ObjectExecutionNode
     {
-        public RootExecutionNode(IObjectGraphType graphType)
-            : base(null, graphType, null, null, new string[0])
+        public RootExecutionNode(IObjectGraphType graphType) : base(null, graphType, null, null, new string[0])
         {
 
         }
@@ -119,8 +115,7 @@ namespace GraphQL.Execution
     {
         public IList<ExecutionNode> Items { get; set; }
 
-        public ArrayExecutionNode(ExecutionNode parent, IGraphType graphType, Field field, FieldType fieldDefinition, string[] path)
-            : base(parent, graphType, field, fieldDefinition, path)
+        public ArrayExecutionNode(ExecutionNode parent, IGraphType graphType, Field field, FieldType fieldDefinition, string[] path) : base(parent, graphType, field, fieldDefinition, path)
         {
 
         }
@@ -143,8 +138,7 @@ namespace GraphQL.Execution
 
     public class ValueExecutionNode : ExecutionNode
     {
-        public ValueExecutionNode(ExecutionNode parent, IGraphType graphType, Field field, FieldType fieldDefinition, string[] path)
-            : base(parent, graphType, field, fieldDefinition, path)
+        public ValueExecutionNode(ExecutionNode parent, IGraphType graphType, Field field, FieldType fieldDefinition, string[] path) : base(parent, graphType, field, fieldDefinition, path)
         {
 
         }
